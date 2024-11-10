@@ -5,7 +5,7 @@ use std::collections::HashMap;
 static VALUE: i32 = 2020; 
 
 fn main() -> std::io::Result<()> {
-    let file = File::open("/Users/priyashah/Documents/Personal Programming Project/Advent-Of-Code/aoc/src/source-files/input.txt")?;
+    let file = File::open("")?;
     let reader = io::BufReader::new(file);
     let mut complement_map = HashMap::new();
     // let mut total:i32 = 0;
