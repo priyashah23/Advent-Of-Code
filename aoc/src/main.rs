@@ -8,7 +8,6 @@ fn main() -> std::io::Result<()> {
     let file = File::open("")?;
     let reader = io::BufReader::new(file);
     let mut complement_map = HashMap::new();
-    // let mut total:i32 = 0;
 
     for line in reader.lines() {
         let current_value:i32  = line?.parse::<i32>().unwrap();
