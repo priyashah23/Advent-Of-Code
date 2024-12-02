@@ -1,44 +1,43 @@
-use std::io::{self, BufRead};
-use std::fs::File;
 
-fn main()  -> io::Result<()>{
-    let file = File::open("")?;
-    let reader = io::BufReader::new(file);
+fn main() {
+    let file = "";
+    let content = std::fs::read_to_string(file).unwrap();
 
-    let mut list_one: Vec<i64> = Vec::new();    
-    let mut list_two: Vec<i64> = Vec::new();
+    let mut left_list: Vec<i64> = Vec::new();    
+    let mut right_list: Vec<i64> = Vec::new();
 
-    for line in reader.lines() {
-        let current_line = line?;
-        let mut iter = current_line.split_whitespace();
-        
-        match iter.next() {
-            Some(x) => {
-                let item = x.parse::<i64>().unwrap();
-                list_one.push(item);
-            },
-            None => {},
-        };
-
-        match iter.next() {
-            Some(y) => {
-                let item = y.parse::<i64>().unwrap();
-                list_two.push(item);
-            },
-            None => {},
-        };
+    for line in content.lines() {
+        let (left, right) = line.split_once("   ").unwrap();
+        left_list.push(left.parse::<i64>().unwrap());
+        right_list.push(right.parse::<i64>().unwrap());
     }
 
-    list_one.sort();
-    list_two.sort();
+    left_list.sort();
+    right_list.sort();
+    part_one(&left_list, &right_list);
+    part_two(&left_list, &right_list);
+}
 
-    let mut total_distance: i64 = 0;
-    let mut index= 0;
-    for line in list_one.iter() {
-        let distance = list_two.get(index).unwrap() - line;
-        total_distance += distance.abs();
-        index+=1;
+fn part_one(left_list: &Vec<i64>, right_list: &Vec<i64>) {
+    let total_distance: i64 = left_list.iter()
+    .zip(right_list.iter())
+    .map(|(l, r) | (r - l).abs())
+    .sum();
+
+    println!("{}", total_distance);
+}
+
+fn part_two(left_list: &Vec<i64>, right_list: &Vec<i64>) {
+    let mut total_similarity: i64 = 0;
+
+    for item in left_list {
+        let indices: Vec<usize> = right_list.iter().enumerate()
+        .filter_map(|(i, x)| if *x == *item { Some(i) } else { None })
+        .collect();
+
+        let occurance = indices.len() as i64;
+        let similarity = item * occurance;
+        total_similarity += similarity;
     }
-    print!("{}", total_distance);
-    Ok(())
+    println!("Total Similarity: {}", total_similarity);
 }
