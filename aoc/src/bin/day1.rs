@@ -2,7 +2,7 @@ use std::io::{self, BufRead};
 use std::fs::File;
 
 fn main()  -> io::Result<()>{
-    let file = File::open("/Users/priyashah/Documents/Personal Programming Project/Advent-Of-Code/aoc/src/files/input.txt")?;
+    let file = File::open("")?;
     let reader = io::BufReader::new(file);
 
     let mut list_one: Vec<i64> = Vec::new();    
