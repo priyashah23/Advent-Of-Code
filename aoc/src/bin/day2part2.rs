@@ -1,3 +1,5 @@
+use std::io::{self, BufRead};
+use std::fs::File;
 
 fn is_safe(levels: &Vec<String>) -> bool {
     let mut status = "BASE";
@@ -38,14 +40,36 @@ fn is_safe(levels: &Vec<String>) -> bool {
     return true;
 }
 
-fn main(){
-    let file = "/Users/priyashah/Documents/Personal Programming Project/Advent-Of-Code/aoc/src/files/input2.txt";
-    let content = std::fs::read_to_string(file).unwrap();
+fn main()  -> io::Result<()>{
+    let file = File::open("")?;
+    let reader = io::BufReader::new(file);
 
-   let total_safe = content.lines()
-    .map(|line| line.split_whitespace().map(str::to_string).collect())
-    .filter(|vector| is_safe(vector))
-    .count();
+    let mut safe_total = 0;
 
-    print!("{total_safe}");
+    for line in reader.lines() {
+        let current_line = line.unwrap();
+        let vector : Vec<String> = current_line.split_whitespace().map(str::to_string).collect();
+        let safe: bool = is_safe(&vector);
+        println!("{:?}:Safe: {safe}", vector);
+        if safe == true {
+            safe_total += 1;
+        }
+        else {
+            let mut dampner_safe = false;
+            for i in 0..vector.len() {
+                let mut temp_levels = vector.clone();
+                temp_levels.remove(i);
+                if is_safe(&temp_levels) {
+                    dampner_safe = true;
+                    break;
+                }
+            }
+            if dampner_safe == true {
+                safe_total += 1;
+            }
+        }
+    }
+
+    println!("Safe: {safe_total}");
+    Ok(())
 }
