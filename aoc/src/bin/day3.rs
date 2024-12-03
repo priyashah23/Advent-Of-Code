@@ -15,17 +15,12 @@ fn part_one (text: &str) -> i32 {
     let re = Regex::new(r"mul\([0-9]{1,3},[0-9]{1,3}\)").unwrap();
     let elements : Vec<&str> = re.captures_iter(text).map(|m| m.get(0).unwrap().as_str()).collect();
     
-    let interg = Regex::new(r"\d+").unwrap();
+    let int_re = Regex::new(r"\d+").unwrap();
 
-    let mut total = 0;
-
-    for x in elements {
-        let numbers : Vec<&str> = interg.captures_iter(x).map(|m| m.get(0).unwrap().as_str()).collect();
-        let first_num = numbers[0].parse::<i32>().unwrap();
-        let second_num = numbers[1].parse::<i32>().unwrap();
-        total += first_num * second_num;
-    }
-
+    let total: i32 = elements.iter()
+    .map(|element| int_re.captures_iter(*element).map(|m| m.get(0).unwrap().as_str()))
+    .map(|mut numbers| numbers.next().unwrap().parse::<i32>().unwrap() * numbers.next().unwrap().parse::<i32>().unwrap())
+    .sum();
     total
 }
 
