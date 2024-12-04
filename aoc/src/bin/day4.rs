@@ -1,14 +1,14 @@
 use diagonal::diagonal_pos_pos;
 use diagonal::diagonal_pos_neg;
+
 use regex::Regex;
 
-static traverse: [char; 3] = ['M', 'A', 'S'];
 
 fn main() {
-    let file = "/Users/priyashah/Documents/Personal Programming Project/Advent-Of-Code/files/input4.txt";
+    let file = "/Users/priyashah/Documents/Personal Programming Project/Advent-Of-Code/files/input4 2.txt";
     let content = std::fs::read_to_string(file).unwrap();
-    part_one(&content);
-    
+    let total = part_two(&content);
+    println!("{total}")
 }
 
 fn part_one(text: &str) {
@@ -21,6 +21,42 @@ fn part_one(text: &str) {
 
 }
 
+fn part_two(text: &str) -> i32{
+    let grid: Vec<Vec<char>> = text
+    .lines() // Ignore lines with errors
+    .map(|line| line.chars().collect())
+    .collect();
+
+    let mut total = 0;
+
+    for x in 0..grid.len() {
+        for y in 0..grid[0].len() {
+            if grid[x][y] == 'A' {
+                let x_coord = x as i32;
+                let y_coord = y as i32;
+
+                if x_coord - 1 < 0 || y_coord - 1 < 0 || x + 1 as usize >= grid.len() || y+ 1 >= grid[0].len() {
+                    // out of bounds
+                    continue;
+                }
+
+                // let mut left_to_right: String;
+                let left_to_right = format!("{}{}{}", grid[x-1][y-1], grid[x][y], grid[x+1][y+1]);
+                let right_to_left = format!("{}{}{}", grid[x-1][y+1], grid[x][y], grid[x+1][y-1]);
+
+                if (right_to_left == "MAS" || right_to_left == "SAM") && (left_to_right == "MAS" || left_to_right == "SAM"){
+                    total += 1
+                }
+            }
+
+        }
+    }
+    return total
+
+
+}
+
+
 fn find_horizontal(text: &str) -> usize {
     let re = Regex::new(r"XMAS").unwrap();
     let re_rev = Regex::new(r"SAMX").unwrap();
@@ -31,7 +67,6 @@ fn find_horizontal(text: &str) -> usize {
     }).sum();
     horizontal_total
 }
-
 
 fn find_vertical(text: &str) -> usize{
     let re = Regex::new(r"XMAS").unwrap();
@@ -59,7 +94,6 @@ fn find_vertical(text: &str) -> usize{
     }
     total
 }
-
 
 fn find_diaganol(text: &str) -> usize{
     let re = Regex::new(r"XMAS").unwrap();
@@ -100,4 +134,15 @@ fn test_part_one() {
 
     // part_one(example);
     part_one(test_case);
+}
+
+#[test]
+fn test_part_two() {
+    // can count multiple occurances of Xmas 
+    let test_case =".M.S......\n..A..MSMS.\n.M.S.MAA..\n..A.ASMSM.\n.M.S.M....\n..........\nS.S.S.S.S.\n.A.A.A.A..\nM.M.M.M.M.\n..........";
+    
+
+    // part_one(example);
+    let total: i32 = part_two(&test_case);
+    assert_eq!(total, 9);
 }
