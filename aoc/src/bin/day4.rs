@@ -1,68 +1,91 @@
-use std::result;
-
+use diagonal::diagonal_pos_pos;
+use diagonal::diagonal_pos_neg;
 use regex::Regex;
-use diagonal::{diagonal_pos_neg, diagonal_pos_pos};
+
+static traverse: [char; 3] = ['M', 'A', 'S'];
 
 fn main() {
     let file = "/Users/priyashah/Documents/Personal Programming Project/Advent-Of-Code/files/input4.txt";
     let content = std::fs::read_to_string(file).unwrap();
+    part_one(&content);
+    
 }
 
 fn part_one(text: &str) {
-    let grid: Vec<Vec<String>> = text
-        .lines() // Ignore lines with errors
-        .map(|line| line.split_whitespace().map(String::from).collect())
-        .collect();
-
-    find_diaganol(&text);
-    let total = find_horizontal(text) + find_vertical(&grid);
-    print!("{total}");
+    let horizontal = find_horizontal(text);
+    let diagonal = find_diaganol(text);
+    let vertical = find_vertical(text);
+    //find_vertical(&text);
+    println!("Horizontal: {horizontal}. Diaganol: {diagonal}, Vertical: {vertical}\n");
+    print!("Total: {}", horizontal + diagonal + vertical);
 
 }
 
 fn find_horizontal(text: &str) -> usize {
     let re = Regex::new(r"XMAS").unwrap();
+    let re_rev = Regex::new(r"SAMX").unwrap();
     let horizontal_total = text
     .lines()
     .map(|line| {
-        let reversed: String = line.chars().rev().collect();
-        re.find_iter(line).count() + re.find_iter(&reversed).count()
+        re.find_iter(line).count() + re_rev.find_iter(line).count()
     }).sum();
     horizontal_total
 }
 
-fn find_vertical(grid: &Vec<Vec<String>>) -> usize {
-    // Iterate through each column
+
+fn find_vertical(text: &str) -> usize{
+    let re = Regex::new(r"XMAS").unwrap();
+    let re_rev = Regex::new(r"SAMX").unwrap();
     let mut total = 0;
-
-    for x in 0..grid.len() {
-        let mut vertical_line = String::new();
-        for y in 0..grid.len() {
-            let current_row = &grid[y][0];
-            let vertical = current_row.chars().nth(x).unwrap();
-            vertical_line.push(vertical);
-            
-        }
-        let current_total = find_horizontal(&vertical_line);
-        total += current_total;
-    }
-    total
-}
-
-fn find_diaganol(text: &str)  {
+    
     let grid: Vec<Vec<char>> = text
     .lines() // Ignore lines with errors
     .map(|line| line.chars().collect())
     .collect();
 
-    let result_pos = diagonal_pos_pos(&grid);
-    let result_neg = diagonal_pos_neg(&grid);
+    let rows = grid.len();
+    let cols = grid[0].len();
+
+    let transposed: Vec<Vec<_>> = (0..cols).map(|col| {
+    (0..rows)
+        .map(|row| grid[row][col])
+        .collect()
+    }).collect();
+
+    for i in 0..transposed.len() {
+        let string: String = transposed[i].iter().collect();
+        total += re.find_iter(&string).count() + re_rev.find_iter(&string).count()
+
+    }
+    total
+}
+
+
+fn find_diaganol(text: &str) -> usize{
+    let re = Regex::new(r"XMAS").unwrap();
+    let re_rev = Regex::new(r"SAMX").unwrap();
+    let mut total = 0;
     
-    for vec in result_pos {
-        let string: String = vec.into_iter().collect();
-        println!("{}", string);
+    let grid: Vec<Vec<char>> = text
+    .lines() // Ignore lines with errors
+    .map(|line| line.chars().collect())
+    .collect();
+
+    let pos_diag = diagonal_pos_pos(&grid);
+    let neg_diag = diagonal_pos_neg(&grid);
+
+
+    for i in 0..pos_diag.len() {
+        let string: String = pos_diag[i].clone().into_iter().collect();
+        total += re.find_iter(&string).count() + re_rev.find_iter(&string).count()
     }
 
+    for i in 0..neg_diag.len() {
+        let string: String = neg_diag[i].clone().into_iter().collect();
+        total += re.find_iter(&string).count() + re_rev.find_iter(&string).count()
+    }
+    total
+    
 }
 
 #[test]
@@ -73,17 +96,8 @@ fn test_part_one() {
     "..X..\n.SAMX.\n.A..A\nXMAS.S\n.X....";
 
     let test_case =
-    "...XXMAS..
-    .SAMXMS...
-    ...S..A...
-    ..A.A.MS.X
-    XMASAMX.MM
-    X.....XA.A
-    S.S.S.S.SS
-    .A.A.A.A.A
-    ..M.M.M.MM
-    .X.X.XMASX";
+    "...XXMAS..\n.SAMXMS...\n...S..A...\n..A.A.MS.X\nXMASAMX.MM\nX.....XA.A\nS.S.S.S.SS\n.A.A.A.A.A\n..M.M.M.MM\n.X.X.XMASX";
 
-    part_one(example);
-    // part_one(test_case);
+    // part_one(example);
+    part_one(test_case);
 }
