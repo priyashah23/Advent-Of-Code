@@ -1,21 +1,17 @@
 use std::collections::{HashMap, HashSet};
 
 fn main() {
-    // let file = "";
-    // let content = std::fs::read_to_string(file).unwrap();
+    let file = "/Users/priyashah/Documents/Personal Programming Project/Advent-Of-Code/files/input5.txt";
+    let content = std::fs::read_to_string(file).unwrap();
 
-    
-    // for line in content.lines() {
-    //     let (left, right) = line.split_once("   ").unwrap();
-    //     left_list.push(left.parse::<i64>().unwrap());
-    //     right_list.push(right.parse::<i64>().unwrap());
-    // }   
+    let result = part_one(&content);
+    println!("{result}")
 }
 
-fn part_one(text: &str) {
+fn part_one(text: &str) -> i32 {
 
-// Now we need to make a hash map... { number | valid numbers that can come before it}
  let mut instruction_map: HashMap<&str, Vec<&str>>= HashMap::new();
+ let mut total = 0;
 
     for line in text.lines() {
         // first we do something until we encounter a ''
@@ -34,33 +30,48 @@ fn part_one(text: &str) {
             }
         } else {
             let order  = line.split(',').collect::<Vec<&str>>();
-            let valid = check_valid(order, &instruction_map);  
+            let copy = order.clone();
+            let valid = check_valid(order, &instruction_map);
+            if valid {
+                let value = copy[copy.len().div_ceil(2) - 1];
+                let num = value.parse::<i32>().unwrap();
+                total += num;
+            }
         }  
     }
-
+    total
 }
 
-fn check_valid(order: Vec<&str>, map:&HashMap<&str, Vec<&str>>) {
+fn check_valid(order: Vec<&str>, map:&HashMap<&str, Vec<&str>>) -> bool{
+    let mut is_valid = true;
+    
     for i in 0..order.len() {
         let num = order.get(i).unwrap();
         let range = &order[i + 1..order.len()];
         if range.is_empty() {
-            break
-            // return true
+            is_valid = true;
+            break;
         }
         let hashset_1: HashSet<&str> = range.iter().cloned().collect();
         
         if let Some(x) = map.get(num)  { 
             let vector = x;
             let hashset_2: HashSet<&str> = vector.iter().cloned().collect();
-            let intersection = hashset_1.intersection(&hashset_2);
-            println!("{:?}, {:?}, {:?}", hashset_1, hashset_2, intersection);
+            let intersection: HashSet<_> = hashset_1.intersection(&hashset_2).cloned().collect();
+            let is_subset = hashset_1.is_subset(&intersection);
+            if !is_subset {
+                is_valid = false;
+                break;
+            }
+        
         } else {
+            // the number does not exist in the order of instructions thus is wrong
+            is_valid = false;
             break;
         }
 
     }
-
+    is_valid
 }
 
 
@@ -95,6 +106,7 @@ fn part_one_test() {
 61,13,29
 97,13,75,29,47";
 
-part_one(test);
+let result = part_one(test);
+assert_eq!(result, 143);
 
 }
