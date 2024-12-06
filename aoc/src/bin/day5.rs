@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 fn main() {
-    let file = "/Users/priyashah/Documents/Personal Programming Project/Advent-Of-Code/files/input5.txt";
+    let file = "";
     let content = std::fs::read_to_string(file).unwrap();
 
     let result = part_one(&content);
