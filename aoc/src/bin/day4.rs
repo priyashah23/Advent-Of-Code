@@ -8,6 +8,7 @@ fn main() {
     let file = "/Users/priyashah/Documents/Personal Programming Project/Advent-Of-Code/files/input4 2.txt";
     let content = std::fs::read_to_string(file).unwrap();
     let total = part_two(&content);
+    part_one(&content);
     println!("{total}")
 }
 

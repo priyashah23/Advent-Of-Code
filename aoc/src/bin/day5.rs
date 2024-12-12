@@ -30,19 +30,21 @@ fn part_one(text: &str) -> i32 {
             }
         } else {
             let order  = line.split(',').collect::<Vec<&str>>();
-            let copy = order.clone();
-            let valid = check_valid(order, &instruction_map);
+            let valid = check_valid(&order, &instruction_map);
             if valid {
-                let value = copy[copy.len().div_ceil(2) - 1];
+                let value = order[order.len().div_ceil(2) - 1];
                 let num = value.parse::<i32>().unwrap();
                 total += num;
+            } else {
+                println!("{:?}", order);
+        
             }
         }  
     }
     total
 }
 
-fn check_valid(order: Vec<&str>, map:&HashMap<&str, Vec<&str>>) -> bool{
+fn check_valid(order: &Vec<&str>, map:&HashMap<&str, Vec<&str>>) -> bool{
     let mut is_valid = true;
     
     for i in 0..order.len() {
